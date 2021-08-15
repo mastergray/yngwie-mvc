@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>YngwieMVC Test</title>
+  <!--<link rel="stylesheet" href="/path/to/stylesheet.css">-->
+  <style>
+
+  body {
+    background:#666;
+    color:#fff;
+  }
+
+  #listView li {
+    cursor:pointer;
+  }
+
+  #listView li span:hover {
+    text-decoration:underline;
+  }
+
+  .button {
+    border:1px solid #000;
+    padding:2px;
+    margin:2px;
+    cursor:pointer;
+  }
+
+  .button:hover {
+    background:#000;
+    color:#fff;
+  }
+
+  .button.disabled, .button.disabled:hover {
+    cursor:default;
+    color:#CCC;
+    border:1px solid #CCC;
+    background:#FFF
+  }
+
+  </style>
+</head>
+<body>
+
+  <div id ="listView"></div>
+
+  <!--<script src="./Guitars.js"></script>-->
+  <script src="./yngwie-mvc.js"></script>
+  <script>
+
+    // :: yngwieModel, yngwieController -> yngwieView
+    // Builds full list of items:
+    let LIST_VIEW = (model, sharedController) => {
+      let view = YngwieMVC.View.init("UL")
+      model.each(item=>{
+        let itemView = ITEM_VIEW(item, sharedController);
+        view.append(itemView);
+      });
+      return view;
+    }
+
+    // :: yngwieModel, yngwieController -> yngwieView
+    // Builds item of list:
+    let ITEM_VIEW = (model, sharedController) => {
+      let controller = YngwieMVC.Controller.init();
+      let listItemValue = ITEM_VIEW_VALUE(model, controller);
+      return YngwieMVC.View.init("LI")
+        .on("click", (evt, node) => {
+          controller.signal("toggle");
+          sharedController.signal("updateShowAllView");
+          sharedController.signal("updateHideAllView");
+        })
+        .appends([
+          YngwieMVC.View.init("SPAN", {}, model.prop("label")),
+          listItemValue
+        ])
+    }
+
+    // :: yngwieModel, yngwieController -> yngwieView
+    // Build "togglable" view of list item:
+    let ITEM_VIEW_VALUE = (model, controller) => {
+      let listItemValue = YngwieMVC.View.init("DIV")
+        .modify(elem=>{
+          return elem.text(model.prop("show") ? model.prop("val") : "");
+        })
+      controller.register("toggle", val => {
+        model.prop("show", !model.prop("show"));
+        listItemValue.renderAgain();
+      })
+      return listItemValue;
+    }
+
+    // :: yngwieModel, (yngiweModel -> BOOLEAN), (EVENT, NODE -> VOID) -> yngwieView
+    // Reuseable function for building "toggle all" views:
+    let TOGGLE_VIEW = (model, pred, onClick) => YngwieMVC.View.init("SPAN")
+      .modify(elem=> {
+        return elem.text(model.prop("name"));
+      })
+      .modify(elem => {
+        return elem.attribs({"class": `button ${pred(model.state("items"))  !== false ? "" : "disabled"}`});
+      })
+      .on("click", (evt, node) => {
+        if (pred(model.state("items")) === true) {
+          onClick(model);
+          model.prop("sharedController").signal("updateMainView")
+        }
+      });
+
+    // :: STRING, [{label:STRING, val:STRING, show:BOOLEAN}], yngwieController -> yngwieView
+    // :: When clicked, show all values of list items:
+    let SHOW_ALL = (model) => {
+      // Initalizes view:
+      let view = TOGGLE_VIEW(
+        YngwieMVC.Model.setAsModel(model),                 // Items
+        (items) => items.some(item=>item.show !== true),   // Predicate
+        (model) => {                                       // On click event handler
+          model.update(state=>{
+            state.items.map(item=>{
+              item.show = true;
+              return item;
+            });
+            return state;
+          });
+        }
+      );
+      // Binds handler to shared controller for updating styles of button:
+      model.sharedController.register("updateShowAllView", () => {
+        view.renderAgain();
+      });
+      return view;
+    }
+
+    // :: STRING, [{label:STRING, val:STRING, show:BOOLEAN}], yngwieController -> yngwieView
+    // :: When clicked, show all values of list items:
+    let HIDE_ALL = (model) => {
+      let view = TOGGLE_VIEW(
+        YngwieMVC.Model.setAsModel(model),                 // Items
+        (items) => items.some(item=>item.show !== false),  // Predicate
+        (model) => {                                       // On click event handler
+          model.update(state=>{
+            state.items.map(item=>{
+              item.show = false;
+              return item;
+            });
+            return state;
+          });
+        }
+      );
+      model.sharedController.register("updateHideAllView", () => {
+        view.renderAgain();
+      });
+      return view;
+    }
+
+    // :: OBJECT, STRING -> yngwieController
+    // Uses controller to render main view with given state:
+    let MAIN_VIEW = (state, target) => {
+      let model = YngwieMVC.Model.setAsModel(state);
+      let controller = YngwieMVC.Controller.init();
+      return controller
+        .register("init", () => {
+          YngwieMVC.View.init()
+            .appends([
+              LIST_VIEW(model, controller),
+              YngwieMVC.View.init("DIV").appends([
+                SHOW_ALL({"name":"Show All", "items":model.state(), "sharedController":controller}),
+                HIDE_ALL({"name":"Hide All", "items":model.state(), "sharedController":controller})
+              ])
+            ])
+            .render(target);
+        })
+        .register("updateMainView", () => {
+          YngwieMVC.View.setAsNode(target).innerHTML = "";
+          MAIN_VIEW(model, target).signal("init")
+        })
+    }
+
+    // Initalize main view:
+    MAIN_VIEW([
+        {"label":"Item 1", "val":"Rabbit", "show":false},
+        {"label":"Item 2", "val":"Wolf", "show":false},
+        {"label":"Item 3", "val":"Dragon", "show":false},
+        {"label":"Item 4", "val":"Omega", "show":false}
+      ], "#listView").signal("init");
+
+  </script>
+</body>
+</html>

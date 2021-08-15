@@ -26,6 +26,6 @@
     "webpack-cli": "^4.7.2"
   },
   "dependencies": {
-    "yngwie": "^0.2.0"
+    "yngwie": "^0.2.3"
   }
 }
