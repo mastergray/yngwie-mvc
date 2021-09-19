@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Some Testing ya'll...</title>
+  <style>
+
+    body {
+      background:#333;
+      color:#fff;
+    }
+
+    div {
+      display:inline-block;
+      margin-left:5px;
+    }
+
+    section > div {
+      display:block;
+    }
+
+  </style>
+  <script src="./yngwie-mvc.js"></script>
+</head>
+<body>
+  <div id="view1"></div>
+  <div id="view2"></div>
+  <div id="view3"></div>
+  <section id="view4"></section>
+  <script>
+    // Initialize page after everything loads:
+    (() => {
+
+      let MODEL = YngwieMVC.Model.init({
+        "view1":"#view1",
+        "view2":"#view2",
+        "view3":"#view3",
+        "view4":"#view4",
+        "items":{
+          "Item A":"Alpha",
+          "Item B":"Beta",
+          "Item C":"Chi",
+          "Item D":"Delta"
+        }
+      });
+
+      let CONTROLLER = YngwieMVC.Controller.init()
+        .register("selectedItem", (value, label, index) => {
+            YngwieMVC.View.init("DIV").text(value).inject(MODEL.prop("view2"));
+        })
+        .register("selectedItem", (value, label, index) => {
+            YngwieMVC.View.init("DIV").text(`${label} (${index})`).inject(MODEL.prop("view3"));
+        })
+        .register("selectedItem", (value, label, index) => {
+          YngwieMVC.View.init("DIV").text(`Select ${label} - ${value} (${index})`).render(MODEL.prop("view4"));
+        })
+
+      // Returns SELECT yngwieView for given OBJECT of items:
+      let ItemSelect = (items) => {
+        let options =  Object.entries(items).map(([label, value]) => {
+          return YngwieMVC.View.init("OPTION", {"value":value}, label)
+        });
+        return YngwieMVC.View.init("SELECT").appends(options).on("change", (evt, node) => {
+          let labels = Object.keys(items);
+          let index = node.selectedIndex;
+          CONTROLLER.signal("selectedItem", node.value, labels[index], index);
+        });
+      }
+
+      ItemSelect(MODEL.prop("items")).inject(MODEL.prop("view1"));
+
+    })();
+  </script>
+</body>
+</html>

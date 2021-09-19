@@ -50,6 +50,14 @@ export default class YngwieView {
     });
   }
 
+  // :: STRING -> this
+  // Modifes element of view to show given text:
+  text(str) {
+    return this.modify(yngwieElement=>{
+      return yngwieElement.text(str);
+    });
+  }
+
   // :: yngwieView -> this;
   // Appends another yngwieView to this view:
   append(yngwieView) {
@@ -71,7 +79,7 @@ export default class YngwieView {
     throw new YngwieError("Expected ARRAY to append yngwieViews to this yngwieView", yngwieViews);
   }
 
-  // :: STRING|ELEMENT|VOID, OJECT|VOID -> ELEMENT.render(target, ctx);
+  // :: STRING|ELEMENT|VOID, OJECT|VOID -> ELEMENT
   // Creates and returns rendered ELEMENT from view, storing result of render:
   render(target, context) {
 
@@ -80,6 +88,7 @@ export default class YngwieView {
 
     // Return render:
     return this._node;
+
   }
 
   // :: VOID -> ELEMENT
@@ -93,6 +102,16 @@ export default class YngwieView {
       return this._node;
     }
     throw new YngwieError("Cannont re-render view because it hasn't been rendered yet.");
+  }
+
+  // STRING|NODE, OBJECT|VOID -> ELEMENT
+  // Empties content of given target and appends it with rendered node:
+  inject(target, context) {
+    let render = this.render();
+    let elem = YngwieView.setAsNode(target, context);
+    elem.innerHTML = "";
+    elem.append(render);
+    return elem;
   }
 
   /**
