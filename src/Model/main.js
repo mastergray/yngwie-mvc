@@ -14,7 +14,7 @@ export default class YngwieModel {
     return scope === undefined ? this._state : YngwieModel.resolveScope(scope, this._state);
   }
 
-  // :: STRING|FUNCTION, (OBJECT, OBJECT -> *)|VOID -> this;
+  // :: STRING|OBJECT -> *, OBJECT, OBJECT -> *|VOID -> this;
   // Applies function to state and optional scope, replacing state with the result of that function:
   update(a, b) {
     let typeArg = Util.getType(a);
@@ -23,7 +23,7 @@ export default class YngwieModel {
         this._state = a(this._state);
       break;
       case "String":
-        this._state = b(this._state, this.state(a));
+        this._state[a] = b(this._state, this.state(a));
       break;
       default:
         throw new YngwieError("Argument passed to yngwieModel.update is of an unsupported type", typeArg);
@@ -76,10 +76,10 @@ export default class YngwieModel {
    *
    */
 
-  // :: OBJECT, STRING -> yngwieModelscope
+  // :: OBJECT -> yngwieModel
   // Static factory method:
-  static init(data, onUpdate) {
-    return new YngwieModel(data, onUpdate);
+  static init(data) {
+    return new YngwieModel(data);
   }
 
   // :: STRING, OBJECT -> OBJECT|UNDEFINED

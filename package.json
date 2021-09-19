@@ -15,6 +15,7 @@
   },
   "author": "mastergray",
   "license": "MIT",
+  "keywords":["MVC", "model-view-controller", "UI", "User Interface", "Client Side", "HTML", "Declarative programming", "Front-End"],
   "bugs": {
     "url": "https://github.com/mastergray/yngwie-mvc/issues"
   },

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Some MORE Testing ya'll...</title>
+  <script src="./yngwie-mvc.js"></script>
+</head>
+<body>
+  <script>
+    // Initialize page after everything loads:
+    (() => {
+
+      // Define model:
+      let MODEL = YngwieMVC.Model.init({
+        "Select A Value":"null",
+        "Guitar 1":"Ibanez GRX20L",
+        "Guitar 2":"Schecter Omen-6",
+        "Guitar 3":"Fender Standard Stratocaster (MIM)",
+        "Guitar 4":"Fender Telecaster (MODSHOP)",
+        "Guitar 5":"Gibson Les Paul (Studio 2018)",
+        "Guitar 6":"Ibanez Prestige RG (RG652AHMLNGB)"
+      });
+
+      // Define view for showing selected value:
+      let VIEW = YngwieMVC.View.init("p").text("No Guitar Selected");
+
+      // Define "controller" for updating view:
+      let CONTROLLER = (view) => YngwieMVC.Controller.init()
+        // Add event to listen for :
+        .register("update-view", value => {
+          // Changes text of view to value provided by event:
+          view.text(value === "null" ? "No Guitar Selected" : value).renderAgain();
+        });
+
+      // Define another view for selecting value:
+      let SELECT = (model, controller) =>  {
+        // Get all data from model:
+        let items = model.state();
+        // Generate OPTION elements from model data:
+        let options = Object.entries(items).map(([label, value])=>{
+          return YngwieMVC.View.init("OPTION", {"value":value}, label);
+        })
+        // Add options to SELECT and bind event handler to triggle controller when value changes:
+        return YngwieMVC.View.init("select")
+          .appends(options)
+          .on("change", (evt, node) => {
+            // Sends value of selected option to controller "update-view" event:
+            controller.signal("update-view", node.value);
+          });
+      };
+
+      // Initialize everything:
+      let controller = CONTROLLER(VIEW);        // Initialize controller with view
+      let select = SELECT(MODEL, controller);   // Initialize SELECT with model and controller
+      select.render("body");                    // Render and append select to body
+      VIEW.render("body");                      // Render and append view to body
+
+    })();
+
+  </script>
+</body>
+</html>

@@ -79,16 +79,13 @@ export default class YngwieView {
     throw new YngwieError("Expected ARRAY to append yngwieViews to this yngwieView", yngwieViews);
   }
 
-  // :: STRING|ELEMENT|VOID, OJECT|VOID -> ELEMENT
+  // :: STRING|ELEMENT|VOID, OBJECT|VOID -> ELEMENT
   // Creates and returns rendered ELEMENT from view, storing result of render:
   render(target, context) {
-
     // Store result of render:
     this._node = YngwieView.render(this, target, context);
-
     // Return render:
     return this._node;
-
   }
 
   // :: VOID -> ELEMENT

@@ -4,7 +4,7 @@ import {Error as YngwieError} from "yngwie";
 
 export default class YngwieController {
 
-  // CONSTRUCTOR :: {STRING:*->VOID} -> yngwieController
+  // CONSTRUCTOR :: {STRING:(... -> *)} -> yngwieController
   constructor(registry) {
     this._registry = registry || {};
   }
@@ -15,7 +15,7 @@ export default class YngwieController {
     return this._registry[id] !== undefined;
   }
 
-  // :: STRING, (* -> VOID) -> this;
+  // :: STRING, (... -> VOID) -> this;
   // Binds function to given STRING:
   // NOTE: Functions bound to signal ID are stored in ARRAY, so multiple functions can be bound to the same ID
   register(id, fn) {
