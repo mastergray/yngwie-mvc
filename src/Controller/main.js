@@ -26,6 +26,13 @@ export default class YngwieController {
     return this;
   }
 
+  // :: STRING, (... -> *) -> this
+  // Ensures only one function is bound to the given signal ID:
+  registerOnce(id, fn) {
+    this._registry[id] = [fn];
+    return this;
+  }
+
   // :: STRING -> this;
   // Removes function bound to given STRING:
   // NOTE: If ID does not exist, an yngwieError is thrown:

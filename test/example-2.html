@@ -38,9 +38,11 @@
         let items = model.state();
         // Generate OPTION elements from model data:
         let options = Object.entries(items).map(([label, value])=>{
-          return YngwieMVC.View.init("OPTION", {"value":value}, label);
+          return YngwieMVC.View.init("OPTION")
+            .attrib("value", value)
+            .text(label)
         })
-        // Add options to SELECT and bind event handler to triggle controller when value changes:
+        // Add options to SELECT and bind event handler to trigger controller when value changes:
         return YngwieMVC.View.init("select")
           .appends(options)
           .on("change", (evt, node) => {

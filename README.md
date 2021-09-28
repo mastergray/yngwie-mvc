@@ -3,7 +3,7 @@ An MVC framework using yngwie-js
 
 ## What Is This?
 
-As noted in the readme for [yngwie-js](https://github.com/mastergray/yngwie-mvc/blob/main/dist/yngwie-mvc.js), trying to build a functional UI with yngwie-js alone would be "admittedly clunky" - so this is an attempt to build a "more explicit MVC approach". Included are classes for [models](https://github.com/mastergray/yngwie-mvc/wiki/YngwieMVC.Model), [views](https://github.com/mastergray/yngwie-mvc/wiki/YngwieMVC.View), and [controllers](https://github.com/mastergray/yngwie-mvc/wiki/YngwieMVC.Controller) with examples found [here](https://github.com/mastergray/yngwie-mvc/tree/main/test).
+As noted in the readme for [yngwie-js](https://github.com/mastergray/yngwie-js#readme), trying to build a practical UI with yngwie-js alone would be "admittedly clunky" - so this is an attempt to build a "more explicit MVC approach". Included are classes for [models](https://github.com/mastergray/yngwie-mvc/wiki/YngwieMVC.Model), [views](https://github.com/mastergray/yngwie-mvc/wiki/YngwieMVC.View), and [controllers](https://github.com/mastergray/yngwie-mvc/wiki/YngwieMVC.Controller) with examples found [here](https://github.com/mastergray/yngwie-mvc/tree/main/test).
 
 ## How To Use This
 
@@ -41,7 +41,7 @@ let SELECT = (model, controller) =>  {
   let options = Object.entries(items).map(([label, value])=>{
     return YngwieMVC.View.init("OPTION", {"value":value}, label);
   })
-  // Add options to SELECT and bind event handler to triggle controller when value changes:
+  // Add options to SELECT and bind event handler to trigger controller when value changes:
   return YngwieMVC.View.init("select")
     .appends(options)
     .on("change", (evt, node) => {

@@ -1,6 +1,6 @@
 {
   "name": "yngwie-mvc",
-  "version": "0.0.1",
+  "version": "0.5.0",
   "description": "MVC framework using yngwie",
   "main": "./src/main.js",
   "scripts": {

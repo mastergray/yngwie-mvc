@@ -5,7 +5,7 @@ export default class YngwieView {
 
   // :: CONSTRUCTOR :: yngwieElement|VOID -> yngwieView
   constructor(yngwieElement) {
-    this._elem = () => yngwieElement;
+    this._elem = yngwieElement || YngwieElement.init("div");
     this._fns = [];
     this._node = undefined;
     this._children = [];
@@ -18,19 +18,16 @@ export default class YngwieView {
     switch (Util.getType(arg)) {
       // Applies view to every modifier function, if there are no modifer functions elem is returned:
       case "undefined":
-        return this._fns.length > 0
-          ? this._fns.reduce((view, fn) => {
-            return fn(view);
-          }, this._elem())
-          : this._elem();
+        return  this._fns.reduce((view, fn) => {
+          return fn(view);
+        }, this._elem);
       // Sets _elem to given yngwieElement:
       case "YngwieElement":
-        this._elem = () => arg;
+        this._elem = arg;
         return this;
       // Tries to initalize yngwieElement using given arguments:
       default:
-        let args = arguments;
-        this._elem = () => YngwieElement.init.apply(null, args);
+        this._elem = YngwieElement.init.apply(null, arguments);
         return this;
     }
   }
@@ -42,20 +39,55 @@ export default class YngwieView {
     return this;
   }
 
+  // :: (yngwieElement -> yngwieElement) -> this
+  // Ensure only the given function will modify the yngwieElement of this view:
+  modifyOnce(fn) {
+    this._fns = [fn];
+    return this;
+  }
+
   // :: STRING, (EVENT, NODE -> VOID) -> this
   // Initializes yngwieListener for yngwieElement stored by view:
   on(id, fn) {
-    return this.modify(yngwieElement=>{
-      return yngwieElement.on(id, fn);
-    });
+    this._elem.on(id, fn);
+    return this;
   }
 
   // :: STRING -> this
-  // Modifes element of view to show given text:
+  // Sets text of yngwieElment for this view:
   text(str) {
-    return this.modify(yngwieElement=>{
-      return yngwieElement.text(str);
-    });
+    this._elem.text(str);
+    return this;
+  }
+
+  // :: OBJECT|VOID -> this|OBJECT
+  // Sets or gets attributes of yngwieElment for this view:
+  attribs(arg) {
+    let argtype = Util.getType(arg).toUpperCase();
+    switch (argtype) {
+      case "OBJECT":
+        this._elem.attribs(arg);
+        return this;
+      case "UNDEFINED":
+        return this._elem.attribs();
+      default:
+        throw new YngwieError("Cannot set or get attributes of yngwieView for type of given arugment", argtype);
+    }
+  }
+
+  // :: STRING, *|VOID -> this|*
+  // Sets or get attribute of yngwieElement:
+  attrib(attr, val) {
+    let attrType = Util.getType(attr).toUpperCase();
+    let valType = Util.getType(val).toUpperCase();
+    if (attrType === "STRING") {
+      if (attrType !== "UNDEFINED") {
+        this._elem.setAttribute(attr, val);
+        return this;
+      }
+      return this._elem.getAttribute(attr);
+    }
+    throw new YngwieError("Name of attribute must be of type STRING", attrType);
   }
 
   // :: yngwieView -> this;

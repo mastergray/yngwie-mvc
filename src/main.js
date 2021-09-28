@@ -1,6 +1,7 @@
 import YngwieModel from "./Model/main.js";
 import YngwieView from "./View/main.js";
 import YngwieController from "./Controller/main.js";
+import Util from "./Util/main.js";
 import {Transform, Error} from "yngwie";
 
 export {
@@ -8,5 +9,6 @@ export {
   YngwieView as View,
   YngwieController as Controller,
   Transform,
-  Error
+  Error,
+  Util
 }
